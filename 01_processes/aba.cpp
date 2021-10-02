@@ -1,6 +1,8 @@
 #include <iostream>
 #include <unistd.h>
 #include <string>
+#include <chrono>
+#include <thread>
 
 using namespace std;
 
@@ -14,7 +16,8 @@ int main(){
         } else {
             cout << "B";
         }
-        sleep(1);
+        chrono::milliseconds sleeptime(500);
+        this_thread::sleep_for(sleeptime);
     }
 
 
