@@ -9,13 +9,11 @@
 
 using namespace std;
 
-int main(){
-    string s;
+char charout(){
+    char s;
     cin >> s;
-    while(true){
-        cout << s << endl;
-        chrono::milliseconds sleeptime(500);
-        this_thread::sleep_for(sleeptime);
-    }
-    return 0;
+    cout << s << endl;
+    //chrono::milliseconds sleeptime(500);
+    //this_thread::sleep_for(sleeptime);
+    return s;
 }
