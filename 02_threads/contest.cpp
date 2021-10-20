@@ -6,6 +6,12 @@
 #include <chrono>
 #include <functional>
 #include <random>
+#include <ostream>
+#include <sstream>
+#include <iomanip>
+#include <future>
+#include <signal.h>
+#include <utility>
 
 using namespace std;
 
@@ -13,9 +19,10 @@ class Car{
     public:
         string mark;
         int velocity;
+        int totalTime = 0;
 
         void setMark(string m){
-            mark = m;
+            this->mark = m;
         }
 
         string getMark(){
@@ -23,39 +30,50 @@ class Car{
         }
 
         void setVelocity(int v){
-            velocity = v;
+            this->velocity = v;
         }
 
         int getVelocity(){
             return velocity;
+        }
+
+        void setTotalTime(int tt){
+            totalTime = tt;
         }  
 
-        void lada_taiga(string mark, int v){
+        int get_total_time(int v){
+            return totalTime + v;
+        }
+
+        int lada_taiga(string mark, int v){
             int rounds = 1;
             random_device rd;
 
-            while(true){
+            while(rounds <= 10){
                 mt19937 gen{rd()};
                 uniform_real_distribution<> dis{1, 10};
                 uniform_real_distribution<> kmh{50, 130};
                 
-                cout << to_string(rounds) << flush;
-                cout << " / " << flush;
-                cout << mark << flush;
-                cout << " " << kmh(gen) << "km/h" << flush;
-                cout << " " << dis(gen) << "s" << flush;
-                cout << endl;
-                
-                this_thread::sleep_for(1s);
+                ostringstream buf;
+                int randomValue = dis(gen);
+                buf << to_string(rounds) << " / " << mark << " " << 
+                    setprecision(3) << randomValue << "s" << " " << 
+                    setprecision(3) << kmh(gen) << "km/h" << flush;
+                string str = buf.str();
+                cout << str << endl;
+                buf.str("");
+
+                totalTime = get_total_time(randomValue);
+                this_thread::sleep_for(0.125s);
                 rounds++;
             }
+            return totalTime;
         }
         
-        void operator()(string m, int velo){
+        void operator()(string m, int velo, int &totalTime){
             setMark(m);
             setVelocity(velo);
-            cout << "insert Car " << getMark() << " in Database" << endl;
-            lada_taiga(getMark(), getVelocity());
+            totalTime = lada_taiga(getMark(), getVelocity());
         }
 
         void print(){
@@ -69,11 +87,24 @@ class Car{
 
 
 int main(){
-    //lada_taiga("JET-SLI-Cabrio", 200);
+    
     Car car1, car2;
-    car1("JET-SLI-Cabrio", 200);
-    //car2("Opel", 400);
-    car1.print();
-    //car2.print();
+    string mark1 = "JET-SLI-Cabrio", mark2 = "Opel Manta";
+    int velo1 = 200, velo2 = 400; 
+    int totalTime1, totalTime2;
 
+    thread t1(car1, mark1, velo1, ref(totalTime1));
+    thread t2(car2, mark2, velo2, ref(totalTime2));
+
+    t1.join();
+    t2.join();
+
+    if(totalTime1 < totalTime2){
+        cout << "Sieger ist: " << mark1 << " mit " << totalTime1 << "s" << endl;
+        cout << "Verlierer ist: " << mark2 << " mit " << totalTime2 << "s" << endl;
+    } else {
+        cout << "Sieger ist: " << mark2 << " mit " << totalTime2 << "s" << endl;
+        cout << "Verlierer ist: " << mark1 << " mit " << totalTime1 << "s" << endl;
+    }
+     
 }
