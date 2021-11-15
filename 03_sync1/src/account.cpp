@@ -25,24 +25,44 @@ using namespace std;
         }
     }
 
-    bool Account::withdraw(){
+    bool Account::withdraw(int data){
+        deposit(data);
         if(isDeposit){
             isDeposit = false;
+            cout << "hat sich was verändert" << endl;
             return true;
         } else {
+            cout << "hat sich nichts verändert" << endl;
             return false;
         }
     }
 
-    void Account::operator()(int balance){
-        set_balance(2);
-        deposit(balance);
-        if(withdraw()){
-            lock_guard<mutex> guard (mtx);
-            cout << "Es hat sich verändert" << endl;
+    Account::Account(int balance){
+        set_balance(balance);
+        isDeposit = false;
+    }
+
+
+    int Depositer::getCredit(){
+        return credit;
+    }
+
+
+    void Depositer::setCredit(int c){
+        this->credit = c;
+    }
+
+
+    void Depositer::deposit(int amount){
+        if(credit >= amount){
+            this_thread::yield();
+            isDeposit = true;
+            int tmp{credit};
+            std::this_thread::sleep_for(10ms);
+            credit = tmp + amount;
         } else {
-            lock_guard<mutex> guard (mtx);
-            cout << "Es hat sich nichts verändert" << endl;
+            cout << "No Money" << endl;
         }
     }
+
 

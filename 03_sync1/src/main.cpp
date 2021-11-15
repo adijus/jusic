@@ -1,5 +1,6 @@
 #include <iostream>
 #include <thread>
+#include <mutex>
 #include "account.h"
 
 using namespace std;
@@ -7,10 +8,18 @@ using namespace std;
 
 
 int main(){
-    Account acc1, acc2;
-    int balance1 = 1, balance2 = 2;
-    thread t1(acc1, balance1);
-    thread t2(acc2, balance2);
+    mutex m;
+    Account acc1(1);
+    Account acc2(2);
+    thread t1{[&]{m.lock(); lock_guard<mutex> guard(m, adopt_lock); cout << acc1.withdraw(2) << endl;}};
+    thread t2{[&]{m.lock(); lock_guard<mutex> guard(m, adopt_lock); cout << acc2.withdraw(4) << endl;}};
+    // t1{[&]{m.lock(); lock_guard<mutex> guard(arc1, addopt_lock); cout << withdraw() << endl;}}
     t1.join();
     t2.join();
+    Depositer d1, d2;
+    int n1 = 2, n2 = 5;
+    thread t3(d1, n1);
+    thread t4(d2, n2);
+    t3.join();
+    t4.join();
 }
