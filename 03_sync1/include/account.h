@@ -13,13 +13,13 @@ class Account{
         int get_balance();
         void set_balance(int b);
         void deposit(int amount);
-        bool withdraw(int data);
-        Account(int balance);
+        void withdraw(int data);
+        Account(){this->balance = 10; this->isDeposit = false;};
 };
 
 
 class Depositer{
-        int credit;
+        int balance;
         bool isDeposit;
     public:
         int getCredit();

@@ -19,47 +19,40 @@ using namespace std;
         if(balance >= amount){
             this_thread::yield();
             isDeposit = true;
-            balance -= amount;
+            this->balance += amount;
         } else {
             cout << "No Money" << endl;
         }
     }
 
-    bool Account::withdraw(int data){
+    void Account::withdraw(int data){
         deposit(data);
         if(isDeposit){
             isDeposit = false;
-            cout << "hat sich was verändert" << endl;
-            return true;
+            cout << get_balance() << endl;
         } else {
             cout << "hat sich nichts verändert" << endl;
-            return false;
         }
-    }
-
-    Account::Account(int balance){
-        set_balance(balance);
-        isDeposit = false;
     }
 
 
     int Depositer::getCredit(){
-        return credit;
+        return balance;
     }
 
 
     void Depositer::setCredit(int c){
-        this->credit = c;
+        this->balance = c;
     }
 
 
     void Depositer::deposit(int amount){
-        if(credit >= amount){
+        if(balance >= amount){
             this_thread::yield();
             isDeposit = true;
-            int tmp{credit};
+            int tmp{balance};
             std::this_thread::sleep_for(10ms);
-            credit = tmp + amount;
+            balance = tmp + amount;
         } else {
             cout << "No Money" << endl;
         }
