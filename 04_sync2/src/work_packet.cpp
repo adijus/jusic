@@ -4,6 +4,11 @@
 
 using namespace std;
 
+
+WorkPacket::WorkPacket(int v){
+    this->id = v;    
+}
+
 const int WorkPacket::getId(){
-    return this->id;
+    return 0;
 }
