@@ -21,10 +21,14 @@ class WorkQueue : public WorkPacket{
     public:
         void push(const int value);
         void pop();
-        WorkQueue(int v): WorkPacket::WorkPacket(v){
+        void worker(int id, queue<int> queue);
+        WorkQueue(int id): WorkPacket::WorkPacket(id){
+            cout << "W" << id << ": Want work packet" << endl;
             int i = 0;
-            while(true){
+            while(i < 10){
                 push(i);
+                worker(WorkPacket::id, this->q);
+                cout << "W" << id << ": Want work packet" << endl;
                 i++;
             }
         };
