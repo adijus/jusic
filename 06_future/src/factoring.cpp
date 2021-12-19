@@ -1,6 +1,7 @@
 #include <iostream>
 #include <future>
 #include <vector>
+#include <chrono>
 #include <ctype.h>
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmisleading-Identation"
@@ -31,14 +32,27 @@ void print(vector<InfInt> vs, string s){
     cout << endl;
 }
 
-vector<InfInt> getPrimefactor(vector<InfInt> vs, string s){
-    vs = get_factors(s);
-    this_thread::sleep_for(3s);
-    print(vs, s);
+
+vector<InfInt> getPrimefactor(vector<InfInt> vs, char* argv[], int argc){
+    auto start = chrono::system_clock::now();
+    for(int i = 0; i < argc; i++){
+            bool isDigit = isNumber(argv[i]);
+            if(isDigit){
+                try{
+                    vs = get_factors(argv[i]);
+                    print(vs, argv[i]);
+                }catch(const future_error& e){
+                    cerr << "Error! " << e.what() << endl;
+                }
+            }
+    }
+    auto duration = chrono::duration_cast<chrono::milliseconds>
+        (std::chrono::system_clock::now() - start);
+    cout << "Time elapsed used for factoring: " << duration.count() << "ms" << endl;
     return vs;
 }
 
-void test(){}
+
 
 int main(int argc, char* argv[]){
     vector<InfInt> vs;
@@ -51,20 +65,7 @@ int main(int argc, char* argv[]){
         cout << "  -h,--help\t \t \tPrint this help message and exit" << endl;
         cout << "  -a,--async\t \t \tasync" << endl;
     } else {
-        for(int i = 0; i < argc; i++){
-            bool isDigit = isNumber(argv[i]);
-            if(isDigit){
-                try{
-                    future<vector<InfInt>> pf{async(getPrimefactor, vs, argv[i])};
-                } catch(const future_error& e){
-                    cout << "Caught future_error: " << e.what() << endl;
-                } 
-            }
-        }
-        
+        auto other{shared_future<vector<InfInt>>{async(launch::async, getPrimefactor, vs, argv, argc)}};
+        //future<vector<InfInt>> pf{async(getPrimefactor, vs, argv[i])};                        
     }
-    
-
-
-
 }
