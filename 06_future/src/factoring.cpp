@@ -13,6 +13,7 @@
 
 using namespace std;
 
+//hier wird geprüft, ob der Wert keine Sonderzeichen, Buchstaben, etc. besitzt
 bool isNumber(string s){
     for(int i = 0; i < s.length(); i++){
         if(isdigit(s[i])){
@@ -24,6 +25,7 @@ bool isNumber(string s){
     return true;
 }
 
+//Hier wird die Liste ausgegeben
 void print(vector<InfInt> vs, string s){
     cout << s << ": ";
     for(int j = 0; j < vs.size(); j++){
@@ -33,29 +35,32 @@ void print(vector<InfInt> vs, string s){
 }
 
 
+//Bei dieser Funktion werden die Primfaktor einer langen Zahl herausgefiltert und im vectorliste gespeichert
+//Währenddessen wird auch die Zeit gemessen
 vector<InfInt> getPrimefactor(vector<InfInt> vs, char* argv[], int argc){
-    auto start = chrono::system_clock::now();
-    for(int i = 0; i < argc; i++){
-            bool isDigit = isNumber(argv[i]);
-            if(isDigit){
-                try{
-                    vs = get_factors(argv[i]);
+    try{
+        auto start = chrono::system_clock::now();   //Anfangszeit
+        for(int i = 0; i < argc; i++){
+                bool isDigit = isNumber(argv[i]);   //schaut nach, ob der Wert nur aus Zahlen besteht
+                if(isDigit){
+                    vs = get_factors(argv[i]);      //Primfaktoren gefiltert und in der liste gespeichert
                     print(vs, argv[i]);
-                }catch(const future_error& e){
-                    cerr << "Error! " << e.what() << endl;
                 }
-            }
+        }
+        auto duration = chrono::duration_cast<chrono::milliseconds>
+            (std::chrono::system_clock::now() - start);     //Berechnung von Anfangszeit und Endzeit
+        cout << "Time elapsed used for factoring: " << duration.count() << "ms" << endl;
+        return vs;
+    }catch(const future_error& e){
+        cerr << "Error! " << e.what() << endl;
     }
-    auto duration = chrono::duration_cast<chrono::milliseconds>
-        (std::chrono::system_clock::now() - start);
-    cout << "Time elapsed used for factoring: " << duration.count() << "ms" << endl;
-    return vs;
 }
 
 
 
 int main(int argc, char* argv[]){
-    vector<InfInt> vs;
+    vector<InfInt> vs;      //vector mit dem datentyp InfInt
+    //CLI11
     if(string(argv[1]) == "-h" || string(argv[1]) == "--help"){
         cout << "Factor numbers" << endl;
         cout << "Usage: factoring [OPTIONS] number..." << endl << endl;
@@ -64,8 +69,8 @@ int main(int argc, char* argv[]){
         cout << "Options:" << endl;
         cout << "  -h,--help\t \t \tPrint this help message and exit" << endl;
         cout << "  -a,--async\t \t \tasync" << endl;
-    } else {
-        auto other{shared_future<vector<InfInt>>{async(launch::async, getPrimefactor, vs, argv, argc)}};
-        //future<vector<InfInt>> pf{async(getPrimefactor, vs, argv[i])};                        
+    } else if(string(argv[1]) == "--async") {
+        auto other{shared_future<vector<InfInt>>{async(launch::async, getPrimefactor, vs, argv, argc)}};                      
     }
+    //CLI11
 }
