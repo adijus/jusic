@@ -1,4 +1,5 @@
 #include <iostream>
+#include <future>
 #include <vector>
 #include <ctype.h>
 #pragma GCC diagnostic push
@@ -22,13 +23,24 @@ bool isNumber(string s){
     return true;
 }
 
+void print(vector<InfInt> vs, string s){
+    cout << s << ": ";
+    for(int j = 0; j < vs.size(); j++){
+        cout << vs[j] << " ";
+    }
+    cout << endl;
+}
+
+vector<InfInt> getPrimefactor(vector<InfInt> vs, string s){
+    vs = get_factors(s);
+    this_thread::sleep_for(3s);
+    print(vs, s);
+    return vs;
+}
+
+void test(){}
+
 int main(int argc, char* argv[]){
-    //InfInt myint1 = "1543215486541318664684835184100510168404641560358";
-    //InfInt myint2 = 156341300544608LL;
-    //
-    //myint1 *= --myint2 - 3;
-    //cout << myint1 << endl;
-    //
     vector<InfInt> vs;
     if(string(argv[1]) == "-h" || string(argv[1]) == "--help"){
         cout << "Factor numbers" << endl;
@@ -41,14 +53,12 @@ int main(int argc, char* argv[]){
     } else {
         for(int i = 0; i < argc; i++){
             bool isDigit = isNumber(argv[i]);
-            //cout << isDigit << endl;
             if(isDigit){
-                vs = get_factors(argv[i]);
-                cout << argv[i] << ": ";
-                for(int j = 0; j < vs.size(); j++){
-                    cout << vs[j] << " ";
-                }
-                cout << endl;
+                try{
+                    future<vector<InfInt>> pf{async(getPrimefactor, vs, argv[i])};
+                } catch(const future_error& e){
+                    cout << "Caught future_error: " << e.what() << endl;
+                } 
             }
         }
         
