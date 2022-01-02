@@ -5,6 +5,8 @@
 using namespace std;
 
 int main(){
-    thread clock{Clock("testclock", 12, 59, 59)};
-    clock.join();
+    thread slave1{TimeSlave("slave1")};
+    thread slave2{TimeSlave("slave2")};
+    slave1.join();
+    slave2.join();
 }
