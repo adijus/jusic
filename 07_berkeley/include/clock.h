@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <chrono>
+#include <pipe.h>
 
 class Clock{
     private:
@@ -17,22 +18,40 @@ class Clock{
         void operator()();
 };
 
+class Channel{
+    private:
+        std::string name;
+        Pipe<long> p1;
+        Pipe<long> p2;
+    public:
+        Channel();
+        Channel(std::string n);
+        Pipe<long>& get_pipe1();
+        Pipe<long>& get_pipe2();
+};
+
+class TimeSlave {
+    private:
+        std::string name;
+        std::chrono::time_point<std::chrono::system_clock> start_time;
+        Channel* channel;
+    public:
+        TimeSlave(std::string n);
+        void operator()();
+        void set_channel1(Channel* ch);
+        Channel* get_channel();
+};
+
 class TimeMaster{
     private:
         std::string name;  
         std::chrono::time_point<std::chrono::system_clock> start_time;
+        Channel* channel;
     public:
         TimeMaster(std::string n);
         void operator()();
-};
-
-class TimeSlave : public TimeMaster{
-    private:
-        std::string name;
-        std::chrono::time_point<std::chrono::system_clock> start_time;
-    public:
-        TimeSlave(std::string n);
-        void operator()();
+        void set_channel1(Channel* ch);
+        Channel* get_channel();
 };
 
 

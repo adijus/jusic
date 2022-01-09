@@ -1,5 +1,6 @@
 #include <iostream>
 #include "clock.h"
+#include "pipe.h"
 #include "timeutils.h"
 #include <chrono>
 #include <unistd.h>
@@ -62,16 +63,38 @@ void Clock::operator()(){
     
 }
 
-TimeMaster::TimeMaster(string n){
-    this->name = n;
-}
 
-TimeSlave::TimeSlave(string n) : TimeMaster(n){
+TimeSlave::TimeSlave(string n){
     this->name = n;
     this->start_time = chrono::system_clock::now();
+}
+
+
+TimeMaster::TimeMaster(string n){
+    this->name = n;
 }
 
 void TimeSlave::operator()(){
     cout << start_time << endl;
     cout << this->name << endl;
+}
+
+Channel* TimeMaster::get_channel(){
+    return this->channel;
+}
+
+Channel* TimeSlave::get_channel(){
+    return this->channel;
+}
+
+void TimeMaster::set_channel1(Channel* ch){
+    this->channel = ch;
+}
+
+void TimeSlave::set_channel1(Channel* ch){
+    this->channel = ch;
+}
+
+Channel::Channel(string n){
+    this->name = name;
 }
