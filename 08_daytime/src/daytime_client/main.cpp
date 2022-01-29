@@ -1,5 +1,6 @@
 #include <iostream>
 #include "spdlog/spdlog.h"
+#include "spdlog/sinks/stdout_color_sinks.h"
 #include "asio.hpp"
 #include <typeinfo>
 
@@ -10,6 +11,7 @@ int main(int argc, char* argv[]){
     if(argc == 1){
         tcp::iostream tcp_connection{"localhost", "1113"};
         if(tcp_connection){
+            tcp_connection << "get time" << endl;
             string data;
             getline(tcp_connection, data);
             cout << data << endl;
